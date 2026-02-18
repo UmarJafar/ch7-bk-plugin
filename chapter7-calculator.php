@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 class Chapter7Calculator {
     
-    private $backend_url = 'http://localhost:8000'; // Change to your Laravel backend URL
+    private $backend_url = 'https://srv1007088.hstgr.cloud'; // Change to your Laravel backend URL
     private $api_key = '23QKos123q4tCfXSob23aQl6YKtokMFs'; // Your API key from Laravel .env
     private $app_id;
     
@@ -25,10 +25,6 @@ class Chapter7Calculator {
         // Admin hooks
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_notices', [$this, 'show_admin_notices']);
-        
-        // Plugin activation/deactivation
-        register_activation_hook(__FILE__, [$this, 'activate_plugin']);
-        register_deactivation_hook(__FILE__, [$this, 'deactivate_plugin']);
         
         $this->app_id = get_option('ch7_calculator_app_id');
     }
@@ -295,26 +291,47 @@ class Chapter7Calculator {
     /**
      * Plugin activation
      */
-    public function activate_plugin() {
+    public static function activate_plugin() {        
         // Set default options
-        add_option('ch7_calculator_version', '2.0');
+        $result = add_option('ch7_calculator_version', '1.0');
         
         // Try to register with backend
-        $this->register_site();
+        $instance = new self();
+        $instance->register_site();
+        
     }
     
     /**
      * Plugin deactivation
      */
-    public function deactivate_plugin() {
-        // Clean up if needed
+    public static function deactivate_plugin() {
+        // Clean up options
         delete_option('ch7_calculator_app_id');
         delete_option('ch7_calculator_dashboard_url');
+        delete_option('ch7_calculator_version');
+    }
+    
+    /**
+     * Plugin uninstall - Complete cleanup
+     */
+    public static function uninstall_plugin() {
+        // Remove all plugin options
+        delete_option('ch7_calculator_app_id');
+        delete_option('ch7_calculator_dashboard_url');
+        delete_option('ch7_calculator_version');
+        
+        // Clear any transients/cache if you add them later
+        delete_transient('ch7_calculator_settings');
     }
 }
 
 // Initialize the plugin
-new Chapter7Calculator();
+$ch7_calculator_instance = new Chapter7Calculator();
+
+// Register activation/deactivation/uninstall hooks
+register_activation_hook(__FILE__, ['Chapter7Calculator', 'activate_plugin']);
+register_deactivation_hook(__FILE__, ['Chapter7Calculator', 'deactivate_plugin']);
+register_uninstall_hook(__FILE__, ['Chapter7Calculator', 'uninstall_plugin']);
 
 // AJAX handler for form submissions (if needed for fallback)
 add_action('wp_ajax_ch7_submit_calculation', 'ch7_handle_ajax_submission');
