@@ -42,8 +42,14 @@ class Chapter7Calculator {
     public function register_site() {
         $current_user = wp_get_current_user();
         
+        // Get site name with fallback
+        $site_name = get_bloginfo('name');
+        if (empty($site_name)) {
+            $site_name = parse_url(home_url(), PHP_URL_HOST) ?: 'WordPress Site';
+        }
+
         $site_data = [
-            'site_name' => get_bloginfo('name'),
+            'site_name' => $site_name,
             'site_url' => home_url(),
             'wp_admin_email' => get_option('admin_email'),
             'owner_name' => $current_user->display_name ?: 'Site Owner',
