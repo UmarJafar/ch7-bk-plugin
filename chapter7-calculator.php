@@ -170,13 +170,35 @@ class Chapter7Calculator {
      * Enqueue scripts and styles
      */
     public function enqueue_scripts() {
+        $plugin_path = plugin_dir_path(__FILE__);
         $plugin_url = plugin_dir_url(__FILE__);
         
+        // CSS file with dynamic cache-busting
+        $css_file_path = $plugin_path . 'assets/style.css';
+        $css_file_url  = $plugin_url . 'assets/style.css';
+        $css_version   = file_exists($css_file_path) ? filemtime($css_file_path) : '1.0.0';
+        
         // Enqueue CSS
-        wp_enqueue_style('chapter7-calculator-style', $plugin_url . 'assets/style.css');
+        wp_enqueue_style(
+            'chapter7-calculator-style',
+            $css_file_url,
+            array(), // no dependencies
+            $css_version // Dynamic version based on file modification time
+        );
+        
+        // JS file with dynamic cache-busting
+        $js_file_path = $plugin_path . 'assets/index.js';
+        $js_file_url  = $plugin_url . 'assets/index.js';
+        $js_version   = file_exists($js_file_path) ? filemtime($js_file_path) : '1.0.0';
         
         // Enqueue JS
-        wp_enqueue_script('chapter7-calculator-script', $plugin_url . 'assets/index.js', [], '2.0', true);
+        wp_enqueue_script(
+            'chapter7-calculator-script',
+            $js_file_url,
+            array(),
+            $js_version, // Dynamic version based on file modification time
+            true // Load in footer
+        );
         
         // Pass settings and config to JavaScript
         wp_localize_script('chapter7-calculator-script', 'ch7Config', [
