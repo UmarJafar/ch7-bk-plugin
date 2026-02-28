@@ -19,7 +19,7 @@ class Chapter7Calculator {
     
     public function __construct() {
         add_action('init', [$this, 'init']);
-        add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts'], 999);
         add_shortcode('chapter7_calculator', [$this, 'render_calculator']);
         
         // Admin hooks
