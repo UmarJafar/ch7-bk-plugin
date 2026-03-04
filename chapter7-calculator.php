@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 class Chapter7Calculator {
     
-    private $backend_url = 'https://srv1007088.hstgr.cloud'; // Change to your Laravel backend URL
+    private $backend_url = 'https://bkcalc.curadebt.com'; // Change to your Laravel backend URL
     private $api_key = '23QKos123q4tCfXSob23aQl6YKtokMFs'; // Your API key from Laravel .env
     private $app_id;
     
