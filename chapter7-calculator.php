@@ -86,51 +86,6 @@ class Chapter7Calculator {
     }
     
     /**
-     * Get calculator settings from Laravel backend
-     */
-    public function get_calculator_settings() {
-        if (!$this->app_id) {
-            return $this->get_default_settings();
-        }
-        
-        $response = wp_remote_get($this->backend_url . '/api/calculator/settings?app_id=' . $this->app_id, [
-            'headers' => [
-                'X-API-Key' => $this->api_key,
-            ],
-            'timeout' => 15,
-        ]);
-        
-        if (!is_wp_error($response)) {
-            $body = wp_remote_retrieve_body($response);
-            $data = json_decode($body, true);
-            
-            if ($data && $data['success']) {
-                return $data['data']['settings'];
-            }
-        }
-        
-        // Fallback to default settings
-        return $this->get_default_settings();
-    }
-    
-    /**
-     * Default settings if backend is unavailable
-     */
-    private function get_default_settings() {
-        return [
-            'income_thresholds' => [
-                'single' => 50000,
-                'married' => 75000,
-            ],
-            'debt_ratio_threshold' => 0.4,
-            'form_fields' => [
-                'show_debt_settlement_checkbox' => true,
-                'required_fields' => ['first_name', 'last_name', 'email', 'phone'],
-            ],
-        ];
-    }
-    
-    /**
      * Submit calculation to Laravel backend
      */
     public function submit_calculation($calculation_data) {
@@ -204,7 +159,6 @@ class Chapter7Calculator {
         wp_localize_script('chapter7-calculator-script', 'ch7Config', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('ch7_calculator_nonce'),
-            'settings' => $this->get_calculator_settings(),
             'appId' => $this->app_id,
             'backendUrl' => $this->backend_url,
             'apiKey' => $this->api_key, // Add API key for direct backend calls
